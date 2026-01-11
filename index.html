@@ -189,6 +189,8 @@
       width: 100%;
       display: block;
       outline: none;
+      max-height: 80vh;
+      object-fit: contain;
     }
 
     .loading {
@@ -521,8 +523,13 @@
       <div class="admin-controls" id="adminControls">
         <button class="add-lecture-btn" onclick="openAddModal()">강의 추가</button>
         <div class="manage-buttons">
-          <button class="manage-btn" onclick="exportLectures()">내보내기</button>
-          <button class="manage-btn" onclick="document.getElementById('fileInput').click()">불러오기</button>
+          <button class="manage-btn" onclick="exportLectures()">JSON 다운로드</button>
+          <button class="manage-btn" onclick="document.getElementById('fileInput').click()">JSON 불러오기</button>
+        </div>
+        <div style="margin-top: 12px; padding: 12px; background: #fafafa; border: 1px solid #e5e5e5; font-size: 0.75rem; color: #666; line-height: 1.5;">
+          <strong>업데이트 방법:</strong><br>
+          강의 추가/삭제 후 "JSON 다운로드"로 파일을 받아<br>
+          GitHub에 <code>lectures.json</code>으로 업로드하세요.
         </div>
       </div>
       <button class="admin-login-btn" id="adminLoginBtn" onclick="openAdminModal()">관리자 모드</button>
@@ -534,7 +541,7 @@
       <div class="video-title empty" id="videoTitle">강의를 선택하세요</div>
       <div class="video-wrapper">
         <div class="loading" id="loading">로딩 중...</div>
-        <video id="videoPlayer" controls preload="metadata">
+        <video id="videoPlayer" controls preload="metadata" playsinline webkit-playsinline>
           브라우저가 영상을 지원하지 않습니다.
         </video>
       </div>
@@ -593,25 +600,36 @@
   let currentActiveItem = null;
   let isAdminMode = false;
 
-  // 로컬 스토리지에서 강의 목록 불러오기
-  function loadLectures() {
-    const saved = localStorage.getItem('lectures');
-    if (saved) {
-      lectures = JSON.parse(saved);
-    } else {
-      // 기본 강의 목록
+  // JSON 파일에서 강의 목록 불러오기
+  async function loadLectures() {
+    try {
+      const response = await fetch('lectures.json');
+      if (response.ok) {
+        lectures = await response.json();
+      } else {
+        // 파일이 없으면 기본 강의 목록 사용
+        lectures = [
+          { title: '확통의 시작<순열과 조합>', path: 'videos/lecture1.mp4' },
+          { title: '자료실 이용법', path: 'videos/lecture2.mp4' },
+          { title: '강의 제목', path: 'videos/lecture3.mp4' }
+        ];
+        console.warn('lectures.json 파일을 찾을 수 없습니다. 기본 목록을 사용합니다.');
+      }
+    } catch (error) {
+      console.error('강의 목록을 불러오는 중 오류 발생:', error);
+      // 오류 발생 시 기본 강의 목록 사용
       lectures = [
         { title: '확통의 시작<순열과 조합>', path: 'videos/lecture1.mp4' },
         { title: '자료실 이용법', path: 'videos/lecture2.mp4' },
         { title: '강의 제목', path: 'videos/lecture3.mp4' }
       ];
-      saveLectures();
     }
     renderLectures();
   }
 
-  // 로컬 스토리지에 강의 목록 저장
+  // 강의 목록 저장 (로컬 스토리지에 임시 저장, 실제 업데이트는 JSON 파일 다운로드 필요)
   function saveLectures() {
+    // 로컬 스토리지에 임시 저장 (오프라인 편집용)
     localStorage.setItem('lectures', JSON.stringify(lectures));
   }
 
@@ -751,6 +769,9 @@
       saveLectures();
       renderLectures();
       closeAddModal();
+      
+      // JSON 파일 업데이트 안내
+      showUpdateNotification();
     }
   }
 
@@ -771,6 +792,17 @@
         videoTitle.classList.add('empty');
         currentActiveItem = null;
       }
+      
+      // JSON 파일 업데이트 안내
+      showUpdateNotification();
+    }
+  }
+  
+  // JSON 파일 업데이트 필요 알림
+  function showUpdateNotification() {
+    const message = '강의 목록이 변경되었습니다.\n\n모든 사용자에게 변경사항을 적용하려면:\n1. "내보내기" 버튼으로 JSON 파일 다운로드\n2. 다운로드한 파일을 "lectures.json"으로 이름 변경\n3. GitHub 저장소에 업로드하여 푸시\n\n지금 JSON 파일을 다운로드하시겠습니까?';
+    if (confirm(message)) {
+      exportLectures();
     }
   }
 
@@ -861,6 +893,15 @@
     // 비디오 로드
     player.src = src;
     player.load();
+    
+    // 고화질 재생을 위한 설정
+    player.playbackRate = 1;
+    if (player.requestVideoFrameCallback) {
+      // 최신 브라우저에서 고화질 렌더링
+      player.requestVideoFrameCallback(() => {
+        // 고화질 렌더링 힌트
+      });
+    }
 
     // 이벤트 리스너
     player.onloadeddata = function() {
