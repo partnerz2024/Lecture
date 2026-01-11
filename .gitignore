@@ -1,0 +1,19 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Optional: 큰 비디오 파일은 Git LFS 사용 권장
+# *.mp4
+# *.webm
+# *.ogg
+
