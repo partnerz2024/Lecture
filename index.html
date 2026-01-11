@@ -15,38 +15,39 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
       background: #fafafa;
       min-height: 100vh;
-      padding: 40px 20px;
+      padding: 20px 16px;
       color: #1a1a1a;
       line-height: 1.6;
     }
 
     .wrapper {
-      max-width: 1400px;
+      max-width: 100%;
       margin: 0 auto;
+      width: 100%;
     }
 
     .header {
       text-align: center;
-      margin-bottom: 60px;
-      padding: 0 20px;
+      margin-bottom: 32px;
+      padding: 0;
     }
 
     .logo-container {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 20px;
-      margin-bottom: 16px;
+      gap: 16px;
+      margin-bottom: 0;
     }
 
     .logo {
-      height: 48px;
+      height: 40px;
       width: auto;
       object-fit: contain;
     }
 
     .header h1 {
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: 300;
       letter-spacing: -0.02em;
       margin: 0;
@@ -62,16 +63,17 @@
 
     .container {
       display: flex;
-      gap: 40px;
+      gap: 24px;
       align-items: flex-start;
     }
 
     .video-list {
-      width: 320px;
+      width: 300px;
+      flex-shrink: 0;
       background: #ffffff;
       border: 1px solid #e5e5e5;
-      padding: 32px 24px;
-      max-height: 85vh;
+      padding: 24px 20px;
+      max-height: calc(100vh - 120px);
       overflow-y: auto;
     }
 
@@ -154,20 +156,21 @@
 
     .player {
       flex: 1;
+      min-width: 0;
       background: #ffffff;
       border: 1px solid #e5e5e5;
-      padding: 40px;
-      min-height: 500px;
+      padding: 24px;
+      min-height: 400px;
     }
 
     .video-title {
-      font-size: 1.5rem;
+      font-size: 1.25rem;
       font-weight: 300;
-      margin-bottom: 32px;
+      margin-bottom: 20px;
       color: #1a1a1a;
-      padding-bottom: 24px;
+      padding-bottom: 16px;
       border-bottom: 1px solid #e5e5e5;
-      min-height: 50px;
+      min-height: 40px;
       display: flex;
       align-items: center;
       letter-spacing: -0.01em;
@@ -445,47 +448,60 @@
       gap: 12px;
     }
 
-    @media (max-width: 768px) {
-      body {
-        padding: 20px 10px;
-      }
-
+    @media (max-width: 1024px) {
       .container {
         flex-direction: column;
-        gap: 24px;
+        gap: 20px;
       }
 
       .video-list {
         width: 100%;
-        max-height: 300px;
-        padding: 24px 20px;
+        max-height: 250px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px 12px;
+      }
+
+      .container {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .video-list {
+        width: 100%;
+        max-height: 250px;
+        padding: 20px 16px;
       }
 
       .header {
-        margin-bottom: 40px;
+        margin-bottom: 24px;
       }
 
       .logo-container {
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
       }
 
       .logo {
-        height: 40px;
+        height: 36px;
       }
 
       .header h1 {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
       }
 
       .player {
         min-height: auto;
-        padding: 24px 20px;
+        padding: 20px 16px;
       }
 
       .video-title {
-        font-size: 1.25rem;
-        margin-bottom: 24px;
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
       }
     }
 
