@@ -226,92 +226,6 @@
       display: block;
     }
 
-    .add-lecture-btn {
-      width: 100%;
-      padding: 12px;
-      margin-top: 16px;
-      background: #1a1a1a;
-      color: #fff;
-      border: none;
-      font-size: 0.85rem;
-      font-weight: 400;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: inherit;
-    }
-
-    .add-lecture-btn:hover {
-      background: #000;
-    }
-
-    .manage-buttons {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .manage-btn {
-      flex: 1;
-      padding: 10px;
-      background: #fff;
-      color: #1a1a1a;
-      border: 1px solid #e5e5e5;
-      font-size: 0.8rem;
-      font-weight: 400;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: inherit;
-    }
-
-    .manage-btn:hover {
-      background: #fafafa;
-    }
-
-    #fileInput {
-      display: none;
-    }
-
-    .admin-controls {
-      display: none;
-    }
-
-    .admin-controls.active {
-      display: block;
-    }
-
-    .admin-login-btn {
-      width: 100%;
-      padding: 10px;
-      margin-top: 12px;
-      background: #fff;
-      color: #1a1a1a;
-      border: 1px solid #e5e5e5;
-      font-size: 0.8rem;
-      font-weight: 400;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: inherit;
-    }
-
-    .admin-login-btn:hover {
-      background: #fafafa;
-    }
-
-    .form-group input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #e5e5e5;
-      font-size: 0.9rem;
-      font-family: inherit;
-      background: #fff;
-      color: #1a1a1a;
-      transition: border-color 0.2s ease;
-    }
-
-    .form-group input[type="password"]:focus {
-      outline: none;
-      border-color: #1a1a1a;
-    }
 
     .modal {
       display: none;
@@ -412,26 +326,6 @@
 
     .btn-primary:hover {
       background: #000;
-    }
-
-    .delete-btn {
-      opacity: 0;
-      font-size: 0.75rem;
-      color: #999;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px 8px;
-      transition: all 0.2s ease;
-      font-family: inherit;
-    }
-
-    .video-item:hover .delete-btn {
-      opacity: 1;
-    }
-
-    .delete-btn:hover {
-      color: #1a1a1a;
     }
 
     .video-item-wrapper {
@@ -536,21 +430,6 @@
     <div class="video-list">
       <h2>강의 목록</h2>
       <div id="videoListContainer"></div>
-      <div class="admin-controls" id="adminControls">
-        <button class="add-lecture-btn" onclick="openAddModal()">강의 추가</button>
-        <div class="manage-buttons">
-          <button class="manage-btn" onclick="exportLectures()">JSON 다운로드</button>
-          <button class="manage-btn" onclick="document.getElementById('fileInput').click()">JSON 불러오기</button>
-        </div>
-        <button class="manage-btn" style="margin-top: 8px; width: 100%; background: #1a1a1a; color: #fff;" onclick="pushToGitHub()" id="pushBtn">
-          GitHub에 푸시
-        </button>
-        <button class="manage-btn" style="margin-top: 8px; width: 100%;" onclick="openGitHubConfigModal()">
-          GitHub 설정
-        </button>
-      </div>
-      <button class="admin-login-btn" id="adminLoginBtn" onclick="openAdminModal()">관리자 모드</button>
-      <input type="file" id="fileInput" accept=".json" onchange="importLectures(event)">
     </div>
 
     <!-- 오른쪽 플레이어 -->
@@ -569,97 +448,11 @@
   </div>
 </div>
 
-<!-- 관리자 로그인 모달 -->
-<div class="modal" id="adminModal">
-  <div class="modal-content">
-    <h3>관리자 인증</h3>
-    <form id="adminForm" onsubmit="loginAdmin(event)">
-      <div class="form-group">
-        <label for="adminPassword">비밀번호</label>
-        <input type="password" id="adminPassword" required placeholder="관리자 비밀번호를 입력하세요">
-      </div>
-      <div class="form-actions">
-        <button type="button" class="btn" onclick="closeAdminModal()">취소</button>
-        <button type="submit" class="btn btn-primary">로그인</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- GitHub 설정 모달 -->
-<div class="modal" id="githubConfigModal">
-  <div class="modal-content">
-    <h3>GitHub 설정</h3>
-    <form id="githubConfigForm" onsubmit="saveGitHubConfig(event)">
-      <div class="form-group">
-        <label for="githubToken">Personal Access Token</label>
-        <input type="password" id="githubToken" required placeholder="ghp_...">
-        <small style="display: block; margin-top: 8px; font-size: 0.75rem; color: #999;">
-          GitHub → Settings → Developer settings → Personal access tokens에서 생성<br>
-          권한: <code>repo</code> 필요
-        </small>
-      </div>
-      <div class="form-group">
-        <label for="githubRepo">저장소 (예: partnerz2024/Lecture)</label>
-        <input type="text" id="githubRepo" required placeholder="partnerz2024/Lecture" value="partnerz2024/Lecture">
-      </div>
-      <div class="form-actions">
-        <button type="button" class="btn" onclick="closeGitHubConfigModal()">취소</button>
-        <button type="submit" class="btn btn-primary">저장</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- 강의 추가 모달 -->
-<div class="modal" id="addModal">
-  <div class="modal-content">
-    <h3>새 강의 추가</h3>
-    <form id="addLectureForm" onsubmit="addLecture(event)">
-      <div class="form-group">
-        <label for="lectureTitle">강의 제목</label>
-        <input type="text" id="lectureTitle" required placeholder="예: 확통의 시작<순열과 조합>">
-      </div>
-      <div class="form-group">
-        <label for="lecturePath">비디오 경로</label>
-        <input type="text" id="lecturePath" required placeholder="예: videos/lecture1.mp4">
-        <small style="display: block; margin-top: 8px; font-size: 0.75rem; color: #999;">지원 형식: MP4, WebM, OGG</small>
-      </div>
-      <div class="form-actions">
-        <button type="button" class="btn" onclick="closeAddModal()">취소</button>
-        <button type="submit" class="btn btn-primary">추가</button>
-      </div>
-    </form>
-  </div>
-</div>
 
 <script>
-  // 관리자 비밀번호 (기본값: admin, 변경 가능)
-  const ADMIN_PASSWORD = 'admin';
-  
-  // GitHub 설정
-  let githubConfig = {
-    token: '',
-    repo: 'partnerz2024/Lecture'
-  };
-  
   // 강의 목록 데이터
   let lectures = [];
   let currentActiveItem = null;
-  let isAdminMode = false;
-  
-  // GitHub 설정 불러오기
-  function loadGitHubConfig() {
-    const saved = localStorage.getItem('githubConfig');
-    if (saved) {
-      githubConfig = JSON.parse(saved);
-    }
-  }
-  
-  // GitHub 설정 저장
-  function saveGitHubConfigToStorage() {
-    localStorage.setItem('githubConfig', JSON.stringify(githubConfig));
-  }
 
   // JSON 파일에서 강의 목록 불러오기
   async function loadLectures() {
@@ -688,11 +481,6 @@
     renderLectures();
   }
 
-  // 강의 목록 저장 (로컬 스토리지에 임시 저장, 실제 업데이트는 JSON 파일 다운로드 필요)
-  function saveLectures() {
-    // 로컬 스토리지에 임시 저장 (오프라인 편집용)
-    localStorage.setItem('lectures', JSON.stringify(lectures));
-  }
 
   // HTML 이스케이프 함수
   function escapeHtml(text) {
@@ -728,312 +516,16 @@
       text.className = 'video-item-text';
       text.textContent = lecture.title;
       
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'delete-btn';
-      deleteBtn.textContent = '삭제';
-      deleteBtn.setAttribute('aria-label', '강의 삭제');
-      deleteBtn.style.display = isAdminMode ? 'block' : 'none';
-      deleteBtn.onclick = function(e) {
-        if (isAdminMode) {
-          deleteLecture(index, e);
-        }
-      };
-      
       content.appendChild(icon);
       content.appendChild(text);
       wrapper.appendChild(content);
-      wrapper.appendChild(deleteBtn);
       item.appendChild(wrapper);
       container.appendChild(item);
     });
   }
 
-  // 관리자 모드 업데이트
-  function updateAdminMode() {
-    const adminControls = document.getElementById('adminControls');
-    const adminLoginBtn = document.getElementById('adminLoginBtn');
-    
-    if (isAdminMode) {
-      adminControls.classList.add('active');
-      adminLoginBtn.textContent = '관리자 모드 종료';
-      adminLoginBtn.onclick = function() {
-        logoutAdmin();
-      };
-    } else {
-      adminControls.classList.remove('active');
-      adminLoginBtn.textContent = '관리자 모드';
-      adminLoginBtn.onclick = function() {
-        openAdminModal();
-      };
-      renderLectures(); // 삭제 버튼 숨기기 위해 다시 렌더링
-    }
-  }
-
-  // 관리자 로그인 모달 열기
-  function openAdminModal() {
-    document.getElementById('adminModal').classList.add('active');
-    document.getElementById('adminPassword').focus();
-  }
-
-  // 관리자 로그인 모달 닫기
-  function closeAdminModal() {
-    document.getElementById('adminModal').classList.remove('active');
-    document.getElementById('adminForm').reset();
-  }
-
-  // 관리자 로그인
-  function loginAdmin(event) {
-    event.preventDefault();
-    const password = document.getElementById('adminPassword').value;
-    
-    if (password === ADMIN_PASSWORD) {
-      isAdminMode = true;
-      sessionStorage.setItem('isAdminMode', 'true');
-      updateAdminMode();
-      closeAdminModal();
-    } else {
-      alert('비밀번호가 일치하지 않습니다.');
-      document.getElementById('adminPassword').value = '';
-      document.getElementById('adminPassword').focus();
-    }
-  }
-
-  // 관리자 로그아웃
-  function logoutAdmin() {
-    if (confirm('관리자 모드를 종료하시겠습니까?')) {
-      isAdminMode = false;
-      sessionStorage.removeItem('isAdminMode');
-      updateAdminMode();
-    }
-  }
-
-  // 강의 추가 모달 열기
-  function openAddModal() {
-    document.getElementById('addModal').classList.add('active');
-    document.getElementById('lectureTitle').focus();
-  }
-
-  // 강의 추가 모달 닫기
-  function closeAddModal() {
-    document.getElementById('addModal').classList.remove('active');
-    document.getElementById('addLectureForm').reset();
-  }
-
-  // 새 강의 추가
-  function addLecture(event) {
-    event.preventDefault();
-    const title = document.getElementById('lectureTitle').value.trim();
-    const path = document.getElementById('lecturePath').value.trim();
-    
-    if (title && path) {
-      lectures.push({ title, path });
-      saveLectures();
-      renderLectures();
-      closeAddModal();
-      
-      // JSON 파일 업데이트 안내
-      showUpdateNotification();
-    }
-  }
-
-  // 강의 삭제
-  function deleteLecture(index, event) {
-    event.stopPropagation();
-    if (confirm('이 강의를 삭제하시겠습니까?')) {
-      lectures.splice(index, 1);
-      saveLectures();
-      renderLectures();
-      
-      // 현재 재생 중인 강의가 삭제된 경우 플레이어 초기화
-      const player = document.getElementById('videoPlayer');
-      const videoTitle = document.getElementById('videoTitle');
-      if (currentActiveItem && !document.getElementById('videoListContainer').contains(currentActiveItem)) {
-        player.src = '';
-        videoTitle.textContent = '강의를 선택하세요';
-        videoTitle.classList.add('empty');
-        currentActiveItem = null;
-      }
-      
-      // JSON 파일 업데이트 안내
-      showUpdateNotification();
-    }
-  }
-  
-  // JSON 파일 업데이트 필요 알림
-  function showUpdateNotification() {
-    loadGitHubConfig();
-    if (githubConfig.token) {
-      // GitHub 토큰이 설정되어 있으면 자동 푸시 제안
-      if (confirm('강의 목록이 변경되었습니다.\n\nGitHub에 자동으로 푸시하시겠습니까?')) {
-        pushToGitHub();
-      }
-    } else {
-      // 토큰이 없으면 수동 업로드 안내
-      const message = '강의 목록이 변경되었습니다.\n\n모든 사용자에게 변경사항을 적용하려면:\n1. "GitHub 설정"에서 Personal Access Token 설정\n2. "GitHub에 푸시" 버튼 클릭\n\n또는 수동으로:\n1. "JSON 다운로드" 버튼으로 파일 다운로드\n2. GitHub 저장소에 업로드\n\n지금 GitHub 설정을 하시겠습니까?';
-      if (confirm(message)) {
-        openGitHubConfigModal();
-      }
-    }
-  }
-  
-  // GitHub 설정 모달 열기
-  function openGitHubConfigModal() {
-    loadGitHubConfig();
-    document.getElementById('githubToken').value = githubConfig.token || '';
-    document.getElementById('githubRepo').value = githubConfig.repo || 'partnerz2024/Lecture';
-    document.getElementById('githubConfigModal').classList.add('active');
-    document.getElementById('githubToken').focus();
-  }
-  
-  // GitHub 설정 모달 닫기
-  function closeGitHubConfigModal() {
-    document.getElementById('githubConfigModal').classList.remove('active');
-    document.getElementById('githubConfigForm').reset();
-  }
-  
-  // GitHub 설정 저장
-  function saveGitHubConfig(event) {
-    event.preventDefault();
-    githubConfig.token = document.getElementById('githubToken').value.trim();
-    githubConfig.repo = document.getElementById('githubRepo').value.trim();
-    saveGitHubConfigToStorage();
-    closeGitHubConfigModal();
-    alert('GitHub 설정이 저장되었습니다.');
-  }
-  
-  // GitHub에 푸시
-  async function pushToGitHub() {
-    loadGitHubConfig();
-    
-    if (!githubConfig.token) {
-      alert('GitHub Personal Access Token이 설정되지 않았습니다.\n"GitHub 설정"에서 토큰을 입력해주세요.');
-      openGitHubConfigModal();
-      return;
-    }
-    
-    const pushBtn = document.getElementById('pushBtn');
-    const originalText = pushBtn.textContent;
-    pushBtn.textContent = '푸시 중...';
-    pushBtn.disabled = true;
-    
-    try {
-      // 1. 현재 파일 정보 가져오기
-      const fileResponse = await fetch(`https://api.github.com/repos/${githubConfig.repo}/contents/lectures.json`, {
-        headers: {
-          'Authorization': `token ${githubConfig.token}`,
-          'Accept': 'application/vnd.github.v3+json'
-        }
-      });
-      
-      let sha = null;
-      if (fileResponse.ok) {
-        const fileData = await fileResponse.json();
-        sha = fileData.sha;
-      }
-      
-      // 2. JSON 내용을 base64로 인코딩
-      const jsonContent = JSON.stringify(lectures, null, 2);
-      const base64Content = btoa(unescape(encodeURIComponent(jsonContent)));
-      
-      // 3. 파일 업데이트
-      const updateResponse = await fetch(`https://api.github.com/repos/${githubConfig.repo}/contents/lectures.json`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `token ${githubConfig.token}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: 'Update lecture list',
-          content: base64Content,
-          sha: sha
-        })
-      });
-      
-      if (updateResponse.ok) {
-        alert('GitHub에 성공적으로 푸시되었습니다!\n몇 분 후 모든 사용자에게 변경사항이 반영됩니다.');
-        // 페이지 새로고침하여 최신 목록 불러오기
-        setTimeout(() => {
-          loadLectures();
-        }, 2000);
-      } else {
-        const error = await updateResponse.json();
-        throw new Error(error.message || '푸시 실패');
-      }
-    } catch (error) {
-      console.error('GitHub 푸시 오류:', error);
-      alert(`GitHub 푸시 중 오류가 발생했습니다:\n${error.message}\n\n토큰과 저장소 이름을 확인해주세요.`);
-    } finally {
-      pushBtn.textContent = originalText;
-      pushBtn.disabled = false;
-    }
-  }
-
-  // 강의 목록 내보내기 (JSON 파일)
-  function exportLectures() {
-    const dataStr = JSON.stringify(lectures, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'lectures.json';
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  // 강의 목록 불러오기 (JSON 파일)
-  async function importLectures(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    try {
-      const text = await file.text();
-      const imported = JSON.parse(text);
-      if (Array.isArray(imported)) {
-        if (confirm('기존 강의 목록을 불러온 목록으로 교체하시겠습니까?')) {
-          lectures = imported;
-          saveLectures();
-          renderLectures();
-          alert('강의 목록을 불러왔습니다.');
-        }
-      } else {
-        alert('올바른 형식의 JSON 파일이 아닙니다.');
-      }
-    } catch (error) {
-      alert('파일을 읽는 중 오류가 발생했습니다.');
-      console.error(error);
-    }
-    event.target.value = ''; // 같은 파일을 다시 선택할 수 있도록 초기화
-  }
-
-  // 모달 외부 클릭 시 닫기
-  document.addEventListener('click', function(event) {
-    const addModal = document.getElementById('addModal');
-    const adminModal = document.getElementById('adminModal');
-    const githubConfigModal = document.getElementById('githubConfigModal');
-    
-    if (event.target === addModal) {
-      closeAddModal();
-    }
-    if (event.target === adminModal) {
-      closeAdminModal();
-    }
-    if (event.target === githubConfigModal) {
-      closeGitHubConfigModal();
-    }
-  });
-
   // 초기화
-  // 세션 스토리지에서 관리자 모드 상태 확인
-  if (sessionStorage.getItem('isAdminMode') === 'true') {
-    isAdminMode = true;
-  }
-  
-  loadGitHubConfig();
   loadLectures();
-  updateAdminMode();
 
   function playVideo(src, title, element) {
     const player = document.getElementById('videoPlayer');
