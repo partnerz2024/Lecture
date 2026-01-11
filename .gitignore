@@ -13,8 +13,12 @@ Thumbs.db
 *.log
 
 # 큰 비디오 파일은 Git LFS 사용 권장
+# videos 폴더의 비디오 파일은 허용
 *.mp4
 *.webm
 *.ogg
+!videos/*.mp4
+!videos/*.webm
+!videos/*.ogg
 !videos/.gitkeep
 
