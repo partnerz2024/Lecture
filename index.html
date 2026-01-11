@@ -526,11 +526,12 @@
           <button class="manage-btn" onclick="exportLectures()">JSON 다운로드</button>
           <button class="manage-btn" onclick="document.getElementById('fileInput').click()">JSON 불러오기</button>
         </div>
-        <div style="margin-top: 12px; padding: 12px; background: #fafafa; border: 1px solid #e5e5e5; font-size: 0.75rem; color: #666; line-height: 1.5;">
-          <strong>업데이트 방법:</strong><br>
-          강의 추가/삭제 후 "JSON 다운로드"로 파일을 받아<br>
-          GitHub에 <code>lectures.json</code>으로 업로드하세요.
-        </div>
+        <button class="manage-btn" style="margin-top: 8px; width: 100%; background: #1a1a1a; color: #fff;" onclick="pushToGitHub()" id="pushBtn">
+          GitHub에 푸시
+        </button>
+        <button class="manage-btn" style="margin-top: 8px; width: 100%;" onclick="openGitHubConfigModal()">
+          GitHub 설정
+        </button>
       </div>
       <button class="admin-login-btn" id="adminLoginBtn" onclick="openAdminModal()">관리자 모드</button>
       <input type="file" id="fileInput" accept=".json" onchange="importLectures(event)">
@@ -569,6 +570,31 @@
   </div>
 </div>
 
+<!-- GitHub 설정 모달 -->
+<div class="modal" id="githubConfigModal">
+  <div class="modal-content">
+    <h3>GitHub 설정</h3>
+    <form id="githubConfigForm" onsubmit="saveGitHubConfig(event)">
+      <div class="form-group">
+        <label for="githubToken">Personal Access Token</label>
+        <input type="password" id="githubToken" required placeholder="ghp_...">
+        <small style="display: block; margin-top: 8px; font-size: 0.75rem; color: #999;">
+          GitHub → Settings → Developer settings → Personal access tokens에서 생성<br>
+          권한: <code>repo</code> 필요
+        </small>
+      </div>
+      <div class="form-group">
+        <label for="githubRepo">저장소 (예: partnerz2024/Lecture)</label>
+        <input type="text" id="githubRepo" required placeholder="partnerz2024/Lecture" value="partnerz2024/Lecture">
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn" onclick="closeGitHubConfigModal()">취소</button>
+        <button type="submit" class="btn btn-primary">저장</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- 강의 추가 모달 -->
 <div class="modal" id="addModal">
   <div class="modal-content">
@@ -595,10 +621,29 @@
   // 관리자 비밀번호 (기본값: admin, 변경 가능)
   const ADMIN_PASSWORD = 'admin';
   
+  // GitHub 설정
+  let githubConfig = {
+    token: '',
+    repo: 'partnerz2024/Lecture'
+  };
+  
   // 강의 목록 데이터
   let lectures = [];
   let currentActiveItem = null;
   let isAdminMode = false;
+  
+  // GitHub 설정 불러오기
+  function loadGitHubConfig() {
+    const saved = localStorage.getItem('githubConfig');
+    if (saved) {
+      githubConfig = JSON.parse(saved);
+    }
+  }
+  
+  // GitHub 설정 저장
+  function saveGitHubConfigToStorage() {
+    localStorage.setItem('githubConfig', JSON.stringify(githubConfig));
+  }
 
   // JSON 파일에서 강의 목록 불러오기
   async function loadLectures() {
@@ -800,9 +845,111 @@
   
   // JSON 파일 업데이트 필요 알림
   function showUpdateNotification() {
-    const message = '강의 목록이 변경되었습니다.\n\n모든 사용자에게 변경사항을 적용하려면:\n1. "내보내기" 버튼으로 JSON 파일 다운로드\n2. 다운로드한 파일을 "lectures.json"으로 이름 변경\n3. GitHub 저장소에 업로드하여 푸시\n\n지금 JSON 파일을 다운로드하시겠습니까?';
-    if (confirm(message)) {
-      exportLectures();
+    loadGitHubConfig();
+    if (githubConfig.token) {
+      // GitHub 토큰이 설정되어 있으면 자동 푸시 제안
+      if (confirm('강의 목록이 변경되었습니다.\n\nGitHub에 자동으로 푸시하시겠습니까?')) {
+        pushToGitHub();
+      }
+    } else {
+      // 토큰이 없으면 수동 업로드 안내
+      const message = '강의 목록이 변경되었습니다.\n\n모든 사용자에게 변경사항을 적용하려면:\n1. "GitHub 설정"에서 Personal Access Token 설정\n2. "GitHub에 푸시" 버튼 클릭\n\n또는 수동으로:\n1. "JSON 다운로드" 버튼으로 파일 다운로드\n2. GitHub 저장소에 업로드\n\n지금 GitHub 설정을 하시겠습니까?';
+      if (confirm(message)) {
+        openGitHubConfigModal();
+      }
+    }
+  }
+  
+  // GitHub 설정 모달 열기
+  function openGitHubConfigModal() {
+    loadGitHubConfig();
+    document.getElementById('githubToken').value = githubConfig.token || '';
+    document.getElementById('githubRepo').value = githubConfig.repo || 'partnerz2024/Lecture';
+    document.getElementById('githubConfigModal').classList.add('active');
+    document.getElementById('githubToken').focus();
+  }
+  
+  // GitHub 설정 모달 닫기
+  function closeGitHubConfigModal() {
+    document.getElementById('githubConfigModal').classList.remove('active');
+    document.getElementById('githubConfigForm').reset();
+  }
+  
+  // GitHub 설정 저장
+  function saveGitHubConfig(event) {
+    event.preventDefault();
+    githubConfig.token = document.getElementById('githubToken').value.trim();
+    githubConfig.repo = document.getElementById('githubRepo').value.trim();
+    saveGitHubConfigToStorage();
+    closeGitHubConfigModal();
+    alert('GitHub 설정이 저장되었습니다.');
+  }
+  
+  // GitHub에 푸시
+  async function pushToGitHub() {
+    loadGitHubConfig();
+    
+    if (!githubConfig.token) {
+      alert('GitHub Personal Access Token이 설정되지 않았습니다.\n"GitHub 설정"에서 토큰을 입력해주세요.');
+      openGitHubConfigModal();
+      return;
+    }
+    
+    const pushBtn = document.getElementById('pushBtn');
+    const originalText = pushBtn.textContent;
+    pushBtn.textContent = '푸시 중...';
+    pushBtn.disabled = true;
+    
+    try {
+      // 1. 현재 파일 정보 가져오기
+      const fileResponse = await fetch(`https://api.github.com/repos/${githubConfig.repo}/contents/lectures.json`, {
+        headers: {
+          'Authorization': `token ${githubConfig.token}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+      
+      let sha = null;
+      if (fileResponse.ok) {
+        const fileData = await fileResponse.json();
+        sha = fileData.sha;
+      }
+      
+      // 2. JSON 내용을 base64로 인코딩
+      const jsonContent = JSON.stringify(lectures, null, 2);
+      const base64Content = btoa(unescape(encodeURIComponent(jsonContent)));
+      
+      // 3. 파일 업데이트
+      const updateResponse = await fetch(`https://api.github.com/repos/${githubConfig.repo}/contents/lectures.json`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${githubConfig.token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: 'Update lecture list',
+          content: base64Content,
+          sha: sha
+        })
+      });
+      
+      if (updateResponse.ok) {
+        alert('GitHub에 성공적으로 푸시되었습니다!\n몇 분 후 모든 사용자에게 변경사항이 반영됩니다.');
+        // 페이지 새로고침하여 최신 목록 불러오기
+        setTimeout(() => {
+          loadLectures();
+        }, 2000);
+      } else {
+        const error = await updateResponse.json();
+        throw new Error(error.message || '푸시 실패');
+      }
+    } catch (error) {
+      console.error('GitHub 푸시 오류:', error);
+      alert(`GitHub 푸시 중 오류가 발생했습니다:\n${error.message}\n\n토큰과 저장소 이름을 확인해주세요.`);
+    } finally {
+      pushBtn.textContent = originalText;
+      pushBtn.disabled = false;
     }
   }
 
@@ -849,12 +996,16 @@
   document.addEventListener('click', function(event) {
     const addModal = document.getElementById('addModal');
     const adminModal = document.getElementById('adminModal');
+    const githubConfigModal = document.getElementById('githubConfigModal');
     
     if (event.target === addModal) {
       closeAddModal();
     }
     if (event.target === adminModal) {
       closeAdminModal();
+    }
+    if (event.target === githubConfigModal) {
+      closeGitHubConfigModal();
     }
   });
 
@@ -864,6 +1015,7 @@
     isAdminMode = true;
   }
   
+  loadGitHubConfig();
   loadLectures();
   updateAdminMode();
 
