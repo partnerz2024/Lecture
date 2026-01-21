@@ -17,6 +17,7 @@ Thumbs.db
 *.mp4
 *.webm
 *.ogg
+*.mov
 !videos/*.mp4
 !videos/*.webm
 !videos/*.ogg
